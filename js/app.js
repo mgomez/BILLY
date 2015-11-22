@@ -4,9 +4,35 @@ var Tarjetas     = (localStorage.Tarjetas === undefined) ? [] : JSON.parse(local
 var Codigos      = (localStorage.Codigos === undefined) ? [] : JSON.parse(localStorage.Codigos);
 var Platillos    = (localStorage.Platillos === undefined) ? [] : JSON.parse(localStorage.Platillos);
 var Amigos       = (localStorage.Amigos === undefined) ? [] : JSON.parse(localStorage.Amigos);
+
+document.addEventListener("deviceready", onDeviceReady, false);
+function onDeviceReady() {
+    window.alert = function(message) {
+        navigator.vibrate(100);
+        navigator.notification.alert(
+            message,
+            null,
+            "SmartInvoice",
+            'OK'
+        );
+    };
+    //doble back *Andorid
+    document.addEventListener("backbutton", function() {
+        navigator.notification.confirm('Presione de nuevo para salir', function(button) {
+            if (button == 2 || button === 0) {
+                navigator.app.exitApp();
+            }
+        }, 'Salir de BILLY?', ['No', 'Salir']);
+        return false;
+    }, false);
+}
 $(function(){
-    index();
-    $(document).on("click", "#navbar a, .nav-xhr", function(e){
+    if(Usuarios.length > 0){
+        goTo("principal");
+    }else{
+        index();        
+    }
+    $(document).on("click", ".nav-xhr", function(e){
         goTo($(this).data("href"));        
     })
 });
@@ -22,7 +48,7 @@ function goTo(view){
 
 function index(){
     setTimeout(function(){
-        $("#slide").slideUp('fast');
+        $("#slide").fadeOut('fast');
     }, 2000)
 }
 
@@ -58,7 +84,23 @@ function login(){
         return false;
     });
 }
-
+function principal(){}
+function nuevaMesa(){
+    $("#qrCode").on("click",QRCode);
+    function QRCode(){
+        cordova.plugins.barcodeScanner.scan(
+          function (result) {
+              alert("We got a barcode\n" +
+                    "Result: " + result.text + "\n" +
+                    "Format: " + result.format + "\n" +
+                    "Cancelled: " + result.cancelled);
+          }, 
+          function (error) {
+              alert("Scanning failed: " + error);
+          }
+       );
+    }
+}
 $.fn.serializeObject = function()
 {
     var o = {};
