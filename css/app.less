@@ -1,0 +1,80 @@
+@import "animate";
+*{
+    box-sizing: border-box;
+}
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'), local('MaterialIcons-Regular'), url(../font/MaterialIcons.woff2) format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+@font-face {
+    font-family: 'syncopate';
+    src: url('../font/Syncopate/syncopate-regular-webfont.eot');
+    src: url('../font/Syncopate/syncopate-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../font/Syncopate/syncopate-regular-webfont.woff2') format('woff2'),
+         url('../font/Syncopate/syncopate-regular-webfont.woff') format('woff'),
+         url('../font/Syncopate/syncopate-regular-webfont.ttf') format('truetype'),
+         url('../font/Syncopate/syncopate-regular-webfont.svg#syncopateregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+body{
+  display: flex;
+  flex-direction: column;
+  font-family: syncopate, Segoe Ui;
+  min-height: 100vh;
+}
+#app{
+  .animated;
+  .fadeInLeft;
+}
+.page{
+    flex: 1 0 auto;
+    .animated;
+}
+#logo{
+  margin: 25px 0px;
+  text-align: center;
+  & img{
+    display: inline-block;
+    width: 100px;
+  }
+}
+#index{
+    #slide{
+        background: #000000 url(../img/index.png) no-repeat center center;
+        background-size: 50%;
+        height: 100vh;
+        width: 100vw;
+        .animated;
+        .fadeIn;
+    }    
+}
+#redes{
+  margin: 35px 0px 0px 0px;
+}
+.icon-redes{
+  display: inline-block;
+  width: 33%;
+  .animated;
+  .fadeInUp;
+}

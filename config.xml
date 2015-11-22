@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget xmlns= "http://www.w3.org/ns/widgets"
+        xmlns:gap= "http://phonegap.com/ns/1.0"
+        id= "com.cgomez.billy"
+        version= "0.2.0">
+
+    <name>BILLY</name>
+    <description>BILLY APP</description>
+    <author email="00.13.zkr@gmail.com" href="http://cgomez.work">
+        Cesar Gomez
+    </author>
+    <icon src="icon.png" />
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="phonegap-version" value="3.7.0" />
+    <preference name="android-build-tool" value="gradle" /> 
+    <preference name="Fullscreen"               value="true" />
+    <preference name="Orientation"              value="portrait" />
+    <preference name="stay-in-webview"          value="true" />
+    <preference name="ios-statusbarstyle"       value="black-opaque" />  
+
+<!-- Core plugins -->
+        <gap:plugin name="org.apache.cordova.camera" source="pgb" version="0.3.2" />
+        <gap:plugin name="org.apache.cordova.device" source="pgb" version="0.2.12" />
+        <gap:plugin name="org.apache.cordova.dialogs" source="pgb" version="0.2.10" />
+        <gap:plugin name="org.apache.cordova.file" source="pgb" version="1.3.1" />
+        <gap:plugin name="org.apache.cordova.file-transfer" source="pgb" version="0.4.6" />
+        <gap:plugin name="org.apache.cordova.inappbrowser" source="pgb" version="0.5.2" />
+        <gap:plugin name="org.apache.cordova.network-information" source="pgb" version="0.2.12" />
+        <gap:plugin name="org.apache.cordova.vibration" source="pgb" version="0.3.11" />
+        <plugin name="net.roughshod.plugins.barcodescanner" spec="3.0.0" source="pgb" />
+</widget>
