@@ -164,12 +164,7 @@ function comanda(){
     $("#frm-agregarPlatillo").validate();
     $("#codigo").val("Codigo "+Codigo);
     $('.modal-trigger').leanModal();
-    var rows = [];
-    $.each(Amigos, function(i, index){
-        var color = getRandomColor();
-        rows.push($("<li>", {html: index, "data-nombre":index, style:"background:"+color, "data-color":color}));
-    });
-    $("#amigos").html(rows);
+    getAmigos();
     $("#btn-guardarPlatillo").on("click", function(){
         if($("#frm-agregarPlatillo").valid()){
             var precioPlatillo = parseFloat($("#precioPlatillo").val());
@@ -186,10 +181,14 @@ function comanda(){
             $("#frm-agregarPlatillo")[0].reset();
         }
     });
-    $("#amigos li").draggable({
-        revert: true,
-        scrollSpeed: 10
-    });
+    $("#btn-guardarAmigo").on("click", function(){
+        var nuevoAmigo = $("#nombreAmigo").val();
+        if(nuevoAmigo !== ""){
+            Amigos.push(nuevoAmigo);
+            getAmigos();
+            $("#modal-agregarAmigo").closeModal();
+        }
+    });     
     $("#btn-subtotal").on("click", function(){
         var valid = 0;
         $("#Alimentos li").each(function(i, index){
@@ -198,11 +197,24 @@ function comanda(){
             }
             if(valid > 0){
                 alert("Faltan Alimentos por asignar");
+                return false;
             }else{
                 goTo("subtotales");
             }
         });
     });
+    function getAmigos(){
+        var rows = [];
+        $.each(Amigos, function(i, index){
+            var color = getRandomColor();
+            rows.push($("<li>", {html: index, "data-nombre":index, style:"background:"+color, "data-color":color}));
+        });
+        $("#amigos").html(rows);
+        $("#amigos li").draggable({
+        revert: true,
+        scrollSpeed: 10
+    });
+    }
     function setDroppable(){
         $("#Alimentos li").droppable({
             activeClass: "ui-state-default",
