@@ -1,6 +1,7 @@
 var Usuarios     = (localStorage.Usuarios === undefined) ? [] : JSON.parse(localStorage.Usuarios);
 var Restaurantes = (localStorage.Restaurantes === undefined) ? [] : JSON.parse(localStorage.Restaurantes);
 var Tarjetas     = (localStorage.Tarjetas === undefined) ? [] : JSON.parse(localStorage.Tarjetas);
+var Amigos       = [];
 
 document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady() {
@@ -72,6 +73,7 @@ function login(){
             if(valid.length > 0){
                 console.debug(valid);
                 Usuario = valid[0].nombre;
+                Amigos.push(Usuario);
                 goTo("principal");
             }else{
                 alert("Usuario y/o Contraseña Incorrecta.");
@@ -125,10 +127,9 @@ function ubicacion(){
     });
 }
 function buscarMesa(){
-    var restaurantes = $.Enumerable.From(Restaurantes).ToArray();
     var li = [];
-    $.each(restaurantes, function(i, index){
-        li.push($("<li>", {class:"collection-item", text:index.name}));
+    $.each(Restaurantes, function(i, index){
+        li.push($("<li>", {class:"collection-item", text:index.nombre}));
     });
     $("#jetsContent").html(li).fadeIn(200, function(){
         var jets = new Jets({
@@ -158,34 +159,49 @@ function codigo(){
     });
 }
 var Platillos = [];
-var Amigos = [];
-function comanda(){
-    Amigos.push(Usuario);
+function comanda(){    
+    Platillos = [];
     $("#frm-agregarPlatillo").validate();
     $("#codigo").val("Codigo "+Codigo);
     $('.modal-trigger').leanModal();
     var rows = [];
     $.each(Amigos, function(i, index){
         var color = getRandomColor();
-        rows.push($("<li>", {html: index, "data-nombre":index, style:"border:1px solid "+color+";color:"+color, "data-color":color}));
+        rows.push($("<li>", {html: index, "data-nombre":index, style:"background:"+color, "data-color":color}));
     });
     $("#amigos").html(rows);
     $("#btn-guardarPlatillo").on("click", function(){
         if($("#frm-agregarPlatillo").valid()){
             var precioPlatillo = parseFloat($("#precioPlatillo").val());
-            Platillos.push({nombre:$("#nombrePlatillo").val(), precio:precioPlatillo});
+            //Platillos.push({nombre:$("#nombrePlatillo").val(), precio:precioPlatillo});
             var li = $("<li>", {
                 class: "collection-item",
-                html: $("#nombrePlatillo").val() + " <span class='badge'>$" + precioPlatillo + "</span>"
+                html: $("#nombrePlatillo").val() + " <span class='badge'>$" + precioPlatillo + "</span>",
+                "data-nombre": $("#nombrePlatillo").val(),
+                "data-precio": precioPlatillo
             });
             $("#Alimentos").append(li);
             $("#modal-agregarPlatillo").closeModal();
             setDroppable();
+            $("#frm-agregarPlatillo")[0].reset();
         }
     });
     $("#amigos li").draggable({
         revert: true,
         scrollSpeed: 10
+    });
+    $("#btn-subtotal").on("click", function(){
+        var valid = 0;
+        $("#Alimentos li").each(function(i, index){
+            if($(this).data("usuario") === undefined){
+                valid = valid + 1;
+            }
+            if(valid > 0){
+                alert("Faltan Alimentos por asignar");
+            }else{
+                goTo("subtotales");
+            }
+        });
     });
     function setDroppable(){
         $("#Alimentos li").droppable({
@@ -194,23 +210,27 @@ function comanda(){
             drop: function(event, ui) {
                 var $amigo = $(ui.draggable[0]);
                 var $li    = $(event.target);
-                $li.css("color", $amigo.data("color")).attr("data-usuario", $amigo.data("nombre"));
+                Platillos.push({nombre:$li.data("nombre"), precio:$li.data("precio"), usuario:$amigo.data("nombre")});
+                $li.css({
+                    backgroundColor: $amigo.data("color"),
+                    color: "#fff"
+                }).attr("data-usuario", $amigo.data("nombre")).find(".badge").css("color","#fff");
             }
         });        
     }
 }
 function subtotales(){
-    var pPropina = 0.16;
+    var pPropina = 16;
     var subtotal = $.Enumerable.From(Platillos).Select(function(x){return x.precio}).Sum();
-    var propina  = subtotal * pPropina;
+    var propina  = subtotal * (pPropina/100);
     var total    = subtotal + propina;
     setMontos();
     $("#plusPropina").on("click", function(){
-        pPropina += .10;
+        pPropina += 1;
         actualizaMontos();
     });
     $("#lessPropina").on("click", function(){
-        pPropina -= .10;
+        pPropina -= 1;
         actualizaMontos();
     });
     $("#pPropina").on("change", function(){
@@ -218,17 +238,41 @@ function subtotales(){
         actualizaMontos();
     });
     function actualizaMontos(){
-        propina  = subtotal * pPropina;
+        propina  = subtotal * (pPropina/100);
         total    = subtotal + propina;
         setMontos();
     }
     function setMontos(){
-        $("#subtotal").val(subtotal);
-        $("#propina").val(propina);
-        $("#total").val(total);
-        $("#pPropina").val(pPropina);
+        $("#subtotal").val(Math.round(subtotal));
+        $("#propina").val(Math.round(propina));
+        $("#total").val(Math.round(total));
+        $("#pPropina").val(Math.round(pPropina));
     }
 }
+function totales(){
+    var rows = [];
+    var Total = 0;
+    $.each(Amigos, function(i, index){
+        var platillos = $.Enumerable.From(Platillos).Where(function(x){return x.usuario == index}).ToArray();
+        var total = $.Enumerable.From(platillos).Sum(function(x){return x.precio});
+        var ck = '<input id=ck-'+i+' type="checkbox" class="ckTotales" data-usuario:"'+index+'" data-total="'+total+'"/><label for="ck-'+i+'">'+index+'</label>';
+        var li = $("<li>",{
+            class:"collection-item",
+            html:ck + " <span class='badge'>$" + total + "</span>"
+        });
+        rows.push(li);
+        Total += total;
+    });
+    var ck = '<input id="ck-all"" type="checkbox" class="ckTotales" data-usuario:"0" data-total="'+Total+'"/><label for="ck-all">Yo invito</label>';
+    var li = $("<li>",{
+            class:"collection-item",
+            html:ck + " <span class='badge bold'>$" + Total + "</span>"
+        });
+    rows.push(li);
+    $("#totales").html(rows);
+}
+function metodosPago(){}
+function gracias(){}
 
 $.fn.serializeObject = function()
 {
@@ -246,12 +290,7 @@ $.fn.serializeObject = function()
     });
     return o;
 };
-
-function getRandomColor() {
-    var letters = '0123456789ABCDEF'.split('');
-    var color = '#';
-    for (var i = 0; i < 6; i++ ) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+function getRandomColor(){
+    var colors = ["#004975", "#00717F", "#006857", "#007F46", "#007520", "#36B4A0", "#00352C"];
+    return colors[Math.floor(Math.random() * 6) + 1]
 }

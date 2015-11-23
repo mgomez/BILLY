@@ -21,13 +21,17 @@
                 <input type="text" id="propina" name="propina" class="center-align" disabled>
             </div>            
         </div>
-        <hr>
+        <div class="row">
+            <div class="col s12">
+                    <hr>
+            </div>
+        </div>
         <div class="row">
             <div class="col s8">
                 <label for="">Total</label>
             </div>
             <div class="input-field col s4">
-                <input type="text" id="total" name="total" class="center-align" disabled>
+                <input type="text" id="total" name="total" class="center-align bold" disabled>
             </div>
         </div>
         <div class="row">
@@ -35,10 +39,23 @@
                 <a id="lessPropina">-</a>
             </div>      
             <div class="col s8">
-                <p class="center-align"><input type="text" id="pPropina" value="16%"></p>
+                <div class="row">
+                    <div class="col s10">
+                        <input type="number" id="pPropina" value="16" class="center-align" disabled>
+                    </div>
+                    <div class="col s2">
+                        <b>%</b>
+                    </div>
+                </div>
             </div>
             <div class="col s2">
                 <a id="plusPropina">+</a>    
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <button class="btn red nav-xhr" data-href="principal">Cancelar</button>
+                <button class="btn nav-xhr" data-href="totales">Totales</button>
             </div>
         </div>
 </section>
