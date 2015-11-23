@@ -14,20 +14,14 @@ function onDeviceReady() {
             'OK'
         );
     };
-    //doble back *Andorid
-    document.addEventListener("backbutton", function() {
-        navigator.notification.confirm('Presione de nuevo para salir', function(button) {
-            if (button == 2 || button === 0) {
-                navigator.app.exitApp();
-            }
-        }, 'Salir de BILLY?', ['No', 'Salir']);
-        return false;
-    }, false);
 }
 $(function(){
     index();
     $(document).on("click", ".nav-xhr", function(e){
         goTo($(this).data("href"));        
+    });
+    $("#logo").on("click", function(){
+        goTo("principal");
     })
 });
 
