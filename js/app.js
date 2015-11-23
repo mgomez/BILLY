@@ -88,14 +88,16 @@ function principal(){}
 function nuevaMesa(){
     $("#qrCode").on("click",QRCode);
     function QRCode(){
-        alert('scanning');        
         var scanner = cordova.require("cordova/plugin/BarcodeScanner");
         scanner.scan( function (result) { 
+            alert('scanning');        
             if(!result.cancelled){
+                alert('scanning 1'); 
                 Restaurantes.push({nombre: result.text});
                 localStorage.Restaurantes = JSON.stringify(Restaurantes);
                 alert("Se agrego correctamente: " + result.text);                
             }
+            alert('scanning 2'); 
         }, function (error) { 
             console.log("Scanning failed: ", error); 
         } );
@@ -133,7 +135,7 @@ function buscarMesa(){
     var Restaurantes = $.Enumerable.From(Restaurantes).ToArray();
     var li = [];
     $.each(Restaurantes, function(i, index){
-        li.push($("<li>", {class:"collection-item", text:index}));
+        li.push($("<li>", {class:"collection-item", text:index.nombre}));
     });
     $("#jetsContent").html(li).fadeIn(200, function(){
         var jets = new Jets({
