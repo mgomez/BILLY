@@ -12,7 +12,7 @@ function onDeviceReady() {
         navigator.notification.alert(
             message,
             null,
-            "SmartInvoice",
+            "BILLY",
             'OK'
         );
     };
@@ -91,27 +91,59 @@ function nuevaMesa(){
         alert('scanning');        
         var scanner = cordova.require("cordova/plugin/BarcodeScanner");
         scanner.scan( function (result) { 
-            alert("We got a barcode\n" + 
-            "Result: " + result.text + "\n" + 
-            "Format: " + result.format + "\n" + 
-            "Cancelled: " + result.cancelled);  
-
-           console.log("Scanner result: \n" +
-                "text: " + result.text + "\n" +
-                "format: " + result.format + "\n" +
-                "cancelled: " + result.cancelled + "\n");
-            document.getElementById("info").innerHTML = result.text;
-            console.log(result);
-            /*
-            if (args.format == "QR_CODE") {
-                window.plugins.childBrowser.showWebPage(args.text, { showLocationBar: false });
+            if(!result.cancelled){
+                Restaurantes.push({nombre: result.text});
+                localStorage.Restaurantes = JSON.stringify(Restaurantes);
+                alert("Se agrego correctamente: " + result.text);                
             }
-            */
         }, function (error) { 
             console.log("Scanning failed: ", error); 
         } );
     }
 }
+function ubicacion(){
+    var Map;
+    var Position;
+    Map = new GMaps({
+        div: '#map',
+        lat: 25.7235769,
+        lng: -100.20161769999999
+    });
+    Map.addMarker({
+        lat: 25.7235769,
+        lng: -100.20161769999999,
+        title: 'Aqui!',
+        infoWindow: {
+            content: '<p>Rubido #201 Col. Los Cristales Guadalupe, N.L.</p>'
+        }
+    });
+    GMaps.geolocate({
+      success: function(position) {
+        Position = position;
+      },
+      error: function(error) {
+        alert('Geolocation failed: '+error.message);
+      },
+      not_supported: function() {
+        alert("Your browser does not support geolocation");
+      }
+    });
+}
+function buscarMesa(){
+    var Restaurantes = $.Enumerable.From(Restaurantes).ToArray();
+    var li = [];
+    $.each(Restaurantes, function(i, index){
+        li.push($("<li>", {class:"collection-item", text:index}));
+    });
+    $("#jetsContent").html(li).fadeIn(200, function(){
+        var jets = new Jets({
+          searchTag: '#jetsSearch',
+          contentTag: '#jetsContent'
+        });
+    });
+}
+
+
 $.fn.serializeObject = function()
 {
     var o = {};
