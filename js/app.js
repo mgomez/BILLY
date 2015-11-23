@@ -1,9 +1,6 @@
 var Usuarios     = (localStorage.Usuarios === undefined) ? [] : JSON.parse(localStorage.Usuarios);
 var Restaurantes = (localStorage.Restaurantes === undefined) ? [] : JSON.parse(localStorage.Restaurantes);
 var Tarjetas     = (localStorage.Tarjetas === undefined) ? [] : JSON.parse(localStorage.Tarjetas);
-var Codigos      = (localStorage.Codigos === undefined) ? [] : JSON.parse(localStorage.Codigos);
-var Platillos    = (localStorage.Platillos === undefined) ? [] : JSON.parse(localStorage.Platillos);
-var Amigos       = (localStorage.Amigos === undefined) ? [] : JSON.parse(localStorage.Amigos);
 
 document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady() {
@@ -27,11 +24,7 @@ function onDeviceReady() {
     }, false);
 }
 $(function(){
-    if(Usuarios.length > 0){
-        goTo("principal");
-    }else{
-        index();        
-    }
+    index();
     $(document).on("click", ".nav-xhr", function(e){
         goTo($(this).data("href"));        
     })
@@ -66,6 +59,7 @@ function registrarse(){
         return false;
     });
 }
+var Usuario;
 function login(){
     var $frm = $("#frm-login");
     $frm.validate();
@@ -74,8 +68,10 @@ function login(){
         if($this.valid()){
             var telefono = $("#input-telefono").val();
             var password = $("#input-password").val();
-            var valid    = $.Enumerable.From(Usuarios).Where(function(x){return x.telefono === telefono && x.password === password}).Count();
-            if(valid > 0){
+            var valid    = $.Enumerable.From(Usuarios).Where(function(x){return x.telefono === telefono && x.password === password}).ToArray();
+            if(valid.length > 0){
+                console.debug(valid);
+                Usuario = valid[0].nombre;
                 goTo("principal");
             }else{
                 alert("Usuario y/o Contraseña Incorrecta.");
@@ -89,15 +85,12 @@ function nuevaMesa(){
     $("#qrCode").on("click",QRCode);
     function QRCode(){
         var scanner = cordova.require("cordova/plugin/BarcodeScanner");
-        scanner.scan( function (result) { 
-            alert('scanning');        
+        scanner.scan( function (result) {        
             if(!result.cancelled){
-                alert('scanning 1'); 
                 Restaurantes.push({nombre: result.text});
                 localStorage.Restaurantes = JSON.stringify(Restaurantes);
                 alert("Se agrego correctamente: " + result.text);                
-            }
-            alert('scanning 2'); 
+            } 
         }, function (error) { 
             console.log("Scanning failed: ", error); 
         } );
@@ -132,16 +125,60 @@ function ubicacion(){
     });
 }
 function buscarMesa(){
-    var Restaurantes = $.Enumerable.From(Restaurantes).ToArray();
+    var restaurantes = $.Enumerable.From(Restaurantes).ToArray();
     var li = [];
-    $.each(Restaurantes, function(i, index){
-        li.push($("<li>", {class:"collection-item", text:index.nombre}));
+    $.each(restaurantes, function(i, index){
+        li.push($("<li>", {class:"collection-item", text:index.name}));
     });
     $("#jetsContent").html(li).fadeIn(200, function(){
         var jets = new Jets({
           searchTag: '#jetsSearch',
           contentTag: '#jetsContent'
         });
+    });
+}
+function configuracion(){
+    var $frm = $("#frm-Configuracion");
+    $frm.validate();
+    $frm.on("submit", function(){
+        return false;
+    })
+}
+function agregarTarjeta(){}
+var Codigo;
+function codigo(){
+    var $frm = $("#frm-Codigo");
+    $frm.validate();
+    $frm.on("submit", function(){
+        if($(this).valid()){
+            Codigo = $("#codigo").val();
+            goTo("comanda");
+        }
+        return false;
+    });
+}
+var Platillos = [];
+var Amigos = [];
+function comanda(){
+    Amigos.push(Usuario);
+    $("#frm-agregarPlatillo").validate();
+    $("#codigo").val("Codigo "+Codigo);
+    $('.modal-trigger').leanModal();
+    var rows = [];
+    $.each(Amigos, function(i, index){
+        rows.push($("<li>", {html: index}));
+    });
+    $("#amigos").html(rows);
+    $("#btn-guardarPlatillo").on("click", function(){
+        if($("#frm-agregarPlatillo").valid()){
+            //Platillos.push({nombre:$("#nombrePlatillo").val(), precio:$("#precioPlatillo")});
+            var li = $("<li>", {
+                class: "collection-item",
+                html: $("#nombrePlatillo").val() + " <span class='badge'>$" + $("#precioPlatillo").val() + "</span>"
+            });
+            $("#Alimentos").append(li);
+            $("#modal-agregarPlatillo").closeModal();
+        }
     });
 }
 

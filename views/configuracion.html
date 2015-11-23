@@ -1,13 +1,38 @@
-<section id="configuracion" class="page">
+<section id="login" class="page visible">
     <div id="main">
-        <nav class="top-nav orange darken-4">
-            <div class="container">
-                <div class="nav-wrapper"><a class="page-title ">CONFIGURACION</a></div>
+        <div id="logo">
+            <img src="img/topNav.png" alt="">
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <h4>Configuracion</h4>
+                <form action="" id="frm-Configuracion">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input type="text" name="nombre" id="nombre" placeholder="Nombre" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input type="email" name="email" id="email" placeholder="Correo" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input type="number" name="telefono" id="telefono" placeholder="Telefono" required>
+                        </div>
+                    </div>
+                    <ul id="jetsContent" class="collection with-header">
+                        <li class="collection-item">Agregar Tarjeta<a data-href="agregarTarjeta" class="secondary-content nav-xhr"><i class="material-icons">add</i></a></li>
+                    </ul>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <button class="btn red nav-xhr" data-href="principal">Volver</button>
+                            <button type="submit" class="btn">Guardar</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </nav>
-        <ul class="collection">
-            <li class="collection-item">Registrarse <a href="#!" class="secondary-content"><i class="material-icons">send</i></a></li>
-            <li class="collection-item">LogIn <a href="#!" class="secondary-content"><i class="material-icons">send</i></a></li>
-        </ul>
+        </div>
     </div>
 </section>
