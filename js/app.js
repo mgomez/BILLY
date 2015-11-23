@@ -166,22 +166,69 @@ function comanda(){
     $('.modal-trigger').leanModal();
     var rows = [];
     $.each(Amigos, function(i, index){
-        rows.push($("<li>", {html: index}));
+        var color = getRandomColor();
+        rows.push($("<li>", {html: index, "data-nombre":index, style:"border:1px solid "+color+";color:"+color, "data-color":color}));
     });
     $("#amigos").html(rows);
     $("#btn-guardarPlatillo").on("click", function(){
         if($("#frm-agregarPlatillo").valid()){
-            //Platillos.push({nombre:$("#nombrePlatillo").val(), precio:$("#precioPlatillo")});
+            var precioPlatillo = parseFloat($("#precioPlatillo").val());
+            Platillos.push({nombre:$("#nombrePlatillo").val(), precio:precioPlatillo});
             var li = $("<li>", {
                 class: "collection-item",
-                html: $("#nombrePlatillo").val() + " <span class='badge'>$" + $("#precioPlatillo").val() + "</span>"
+                html: $("#nombrePlatillo").val() + " <span class='badge'>$" + precioPlatillo + "</span>"
             });
             $("#Alimentos").append(li);
             $("#modal-agregarPlatillo").closeModal();
+            setDroppable();
         }
     });
+    $("#amigos li").draggable({
+        revert: true,
+        scrollSpeed: 10
+    });
+    function setDroppable(){
+        $("#Alimentos li").droppable({
+            activeClass: "ui-state-default",
+            hoverClass: "ui-state-hover",
+            drop: function(event, ui) {
+                var $amigo = $(ui.draggable[0]);
+                var $li    = $(event.target);
+                $li.css("color", $amigo.data("color")).attr("data-usuario", $amigo.data("nombre"));
+            }
+        });        
+    }
 }
-
+function subtotales(){
+    var pPropina = 0.16;
+    var subtotal = $.Enumerable.From(Platillos).Select(function(x){return x.precio}).Sum();
+    var propina  = subtotal * pPropina;
+    var total    = subtotal + propina;
+    setMontos();
+    $("#plusPropina").on("click", function(){
+        pPropina += .10;
+        actualizaMontos();
+    });
+    $("#lessPropina").on("click", function(){
+        pPropina -= .10;
+        actualizaMontos();
+    });
+    $("#pPropina").on("change", function(){
+        pPropina = $(this).val();
+        actualizaMontos();
+    });
+    function actualizaMontos(){
+        propina  = subtotal * pPropina;
+        total    = subtotal + propina;
+        setMontos();
+    }
+    function setMontos(){
+        $("#subtotal").val(subtotal);
+        $("#propina").val(propina);
+        $("#total").val(total);
+        $("#pPropina").val(pPropina);
+    }
+}
 
 $.fn.serializeObject = function()
 {
@@ -199,3 +246,12 @@ $.fn.serializeObject = function()
     });
     return o;
 };
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
