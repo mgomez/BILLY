@@ -139,7 +139,16 @@ function configuracion(){
         return false;
     })
 }
-function agregarTarjeta(){}
+function agregarTarjeta(){
+    getTarjetas();
+    function getTarjetas(){
+        var rows = [];
+        $.each(Tarjetas, function(i, index){
+            rows.push($("<li>", {html: index, "data-nombre":index, style:"background:"+color, "data-color":color}));
+        });
+        $("#Tarjetas").html(rows);
+    }
+}
 var Codigo;
 function codigo(){
     var $frm = $("#frm-Codigo");
@@ -161,8 +170,7 @@ function comanda(){
     getAmigos();
     $("#btn-guardarPlatillo").on("click", function(){
         if($("#frm-agregarPlatillo").valid()){
-            var precioPlatillo = parseFloat($("#precioPlatillo").val());
-            //Platillos.push({nombre:$("#nombrePlatillo").val(), precio:precioPlatillo});
+            var precioPlatillo = parseFloat($("#precioPlatillo").val()) || 0;
             var li = $("<li>", {
                 class: "collection-item",
                 html: $("#nombrePlatillo").val() + " <span class='badge'>$" + precioPlatillo + "</span>",
@@ -205,9 +213,9 @@ function comanda(){
         });
         $("#amigos").html(rows);
         $("#amigos li").draggable({
-        revert: true,
-        scrollSpeed: 10
-    });
+            revert: true,
+            scrollSpeed: 10
+        });
     }
     function setDroppable(){
         $("#Alimentos li").droppable({
