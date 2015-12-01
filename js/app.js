@@ -16,7 +16,11 @@ function onDeviceReady() {
     };
 }
 $(function(){
-    index();
+    if(localStorage.Usuario !== undefined){
+        goTo("principal");
+    }else{
+        index();        
+    }
     $(document).on("click", ".nav-xhr", function(e){
         goTo($(this).data("href"));        
     });
@@ -26,11 +30,16 @@ $(function(){
 });
 
 function goTo(view){
+    console.debug(view);
     $("#app").hide();
-    var url = "views/"+view+".html";
+    var url = (view === "BackComanda") ? "views/comanda.html" : "views/"+view+".html";
     $.get(url, function(html){
         $("#app").html(html).show();
-        eval(view)();               
+        if(view === "BackComanda"){
+            $("#Alimentos").html(localStorage.Alimentos);
+            comanda();  
+        }              
+        eval(view)();  
     });
 }
 
@@ -69,6 +78,7 @@ function login(){
                 Usuario = valid[0].nombre;
                 Amigos.push(Usuario);
                 goTo("principal");
+                localStorage.Usuario = Usuario;
             }else{
                 alert("Usuario y/o Contraseña Incorrecta.");
             }
@@ -76,7 +86,13 @@ function login(){
         return false;
     });
 }
-function principal(){}
+function principal(){
+    $("#usr span").html(localStorage.Usuario);
+    $("#cerrarSesion").on("click", function(){
+        localStorage.removeItem("Usuario");
+        goTo("login");
+    }); 
+}
 function nuevaMesa(){
     $("#qrCode").on("click",QRCode);
     function QRCode(){
@@ -85,7 +101,9 @@ function nuevaMesa(){
             if(!result.cancelled){
                 Restaurantes.push({nombre: result.text});
                 localStorage.Restaurantes = JSON.stringify(Restaurantes);
-                alert("Se agrego correctamente: " + result.text);                
+                alert("Se agrego correctamente: " + result.text); 
+                localStorage.Restaurante = result.text;  
+                goTo("comanda");             
             } 
         }, function (error) { 
             console.log("Scanning failed: ", error); 
@@ -164,6 +182,9 @@ function codigo(){
 var Platillos = [];
 function comanda(){    
     Platillos = [];
+    if(localStorage.Restaurante !== undefined){
+        $("#Restaurante").val(localStorage.Restaurante).show();
+    }
     $("#frm-agregarPlatillo").validate();
     $("#codigo").val("Codigo "+Codigo);
     $('.modal-trigger').leanModal();
@@ -202,6 +223,7 @@ function comanda(){
                 return false;
             }else{
                 goTo("subtotales");
+                localStorage.Alimentos = $("#Alimentos").html();
             }
         });
     });
@@ -262,6 +284,9 @@ function subtotales(){
         $("#total").val(Math.round(total));
         $("#pPropina").val(Math.round(pPropina));
     }
+    $("#BackComanda").on("click", function(){
+        goTo("BackComanda");   
+    });
 }
 function totales(){
     var rows = [];
